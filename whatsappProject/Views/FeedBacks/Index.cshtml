@@ -5,7 +5,12 @@
 }
 
 <h1>Index</h1>
+<h2>The Average Score is : @ViewBag.avg</h2>
 
+<form asp-action="Index" id='queryForm'>
+    <input name= "query" id="search" />
+    <input type ="submit" value="Search" />
+</form>
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -27,7 +32,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id = "TheBody">
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -51,3 +56,7 @@
 }
     </tbody>
 </table>
+<footer>
+<script src = "~/lib/jquery/dist/jquery.min.js"></script>
+<script src = "~/js/Search.js"></script>
+</footer>

@@ -28,8 +28,6 @@ namespace whatsappProject.Controllers
     {
         private static List<FeedBack> _feeds = new List<FeedBack>();
         private static int _id = 1;
-        private static int scoreSum = 0;
-
         public float getAverage()
         {
             float sum = 0;
@@ -40,7 +38,7 @@ namespace whatsappProject.Controllers
             }
             if (size > 0)
             {
-                return scoreSum / size;
+                return sum / size;
             }
             return 0;
 
@@ -98,7 +96,17 @@ namespace whatsappProject.Controllers
         public IActionResult Index()
         {
             List<FeedBack> feedBacks = (List<FeedBack>)_service.GetAllFeedBacks();
+            ViewBag.avg = _service.getAverage();
             return View(feedBacks);
+        }
+
+        public IActionResult Search(string query)
+        {
+            var q = from feedback in _service.GetAllFeedBacks()
+                    where feedback.Name.Contains(query)||
+                    feedback.FeedbackContent.Contains(query)
+                    select feedback;
+            return PartialView(q);
         }
 
         // GET: FeedBacks/Details/5
