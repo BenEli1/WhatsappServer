@@ -21,11 +21,30 @@ namespace whatsappProject.Controllers
         void UpdateFeedBack(int id, int score, string name, string feedback);
 
         void CreateFeedBack(FeedBack feedBack);
+
+        float getAverage();
     }
     public class FeedBackService : IFeedBackService
     {
         private static List<FeedBack> _feeds = new List<FeedBack>();
         private static int _id = 1;
+        private static int scoreSum = 0;
+
+        public float getAverage()
+        {
+            float sum = 0;
+            float size = _feeds.Count();
+            foreach (FeedBack feedback in _feeds)
+            {
+                sum += feedback.Score;
+            }
+            if (size > 0)
+            {
+                return scoreSum / size;
+            }
+            return 0;
+
+        }
         public void CreateFeedBack(FeedBack feedBack)
         {
             feedBack.Date = DateTime.Now.ToString();
@@ -105,7 +124,7 @@ namespace whatsappProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Score,Name,FeedbackContent,Date")] FeedBack feedBack)
+        public IActionResult Create([Bind("Id,Score,Name,FeedbackContent")] FeedBack feedBack)
         {
             if (ModelState.IsValid)
             {
@@ -133,7 +152,7 @@ namespace whatsappProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,Score,Name,FeedbackContent,Date")] FeedBack feedBack)
+        public IActionResult Edit(int id, [Bind("Id,Score,Name,FeedbackContent")] FeedBack feedBack)
         {
             if (id != feedBack.Id)
             {

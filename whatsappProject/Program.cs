@@ -1,12 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using static whatsappProject.Controllers.FeedBackService;
+using static whatsappProject.Controllers.IFeedBackService;
 using whatsappProject.Data;
+using whatsappProject.Controllers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<whatsappProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("whatsappProjectContext") ?? throw new InvalidOperationException("Connection string 'whatsappProjectContext' not found.")));
 
-// Add services to the container.
+builder.Services.AddScoped<IFeedBackService, FeedBackService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
