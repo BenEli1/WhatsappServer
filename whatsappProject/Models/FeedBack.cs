@@ -1,6 +1,6 @@
 ﻿namespace whatsappProject.Models
 {
-    public class Grading
+    public class FeedBack
     {
         public int Id { get; set; }
 
@@ -8,7 +8,9 @@
 
         public string Name { get; set; }
 
-        public string FeedBack { get; set; }
+        public string FeedbackContent { get; set; }
+
+        public string Date { get; set; }
 
 
     }

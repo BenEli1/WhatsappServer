@@ -15,6 +15,6 @@ namespace whatsappProject.Data
         {
         }
 
-        public DbSet<whatsappProject.Models.Grading> Grading { get; set; }
+        public DbSet<whatsappProject.Models.FeedBack> Grading { get; set; }
     }
 }
