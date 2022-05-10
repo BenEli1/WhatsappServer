@@ -12,4 +12,5 @@ namespace whatsappProject.Models
         public string Image { get; set; }
 
     }
+
 }
