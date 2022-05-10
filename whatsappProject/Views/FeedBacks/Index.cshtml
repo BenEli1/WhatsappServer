@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<whatsappProject.Models.FeedBack>
 
+
 @{
     ViewData["Title"] = "Index";
 }
@@ -7,7 +8,7 @@
 <h1>Index</h1>
 <h2>The Average Score is : @ViewBag.avg</h2>
 
-<form asp-action="Index" id='queryForm'>
+<form asp-action="Index" id="queryForm">
     <input name= "query" id="search" />
     <input type ="submit" value="Search" />
 </form>
@@ -32,7 +33,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody id = "TheBody">
+    <tbody>
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -56,7 +57,6 @@
 }
     </tbody>
 </table>
-<footer>
-<script src = "~/lib/jquery/dist/jquery.min.js"></script>
-<script src = "~/js/Search.js"></script>
-</footer>
+@section Scripts{
+    <script src = "~/js/Search.js"></script>
+}

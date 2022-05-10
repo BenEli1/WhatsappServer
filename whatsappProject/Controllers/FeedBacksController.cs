@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using whatsappProject.Data;
 using whatsappProject.Models;
-
 namespace whatsappProject.Controllers
 {
     public interface IFeedBackService
