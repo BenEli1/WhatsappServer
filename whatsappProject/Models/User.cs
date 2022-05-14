@@ -7,6 +7,7 @@ namespace whatsappProject.Models
         public string UserName { get; set; }
 
         public string NickName { get; set; }
+        
         public int Password { get; set; }
 
         public string Image { get; set; }
