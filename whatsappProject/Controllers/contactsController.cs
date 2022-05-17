@@ -23,44 +23,52 @@ namespace whatsappProject.Controllers
 
         // GET: api/contacts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<Object>>> GetContact()
         {
-          if (_context.User == null)
+
+            //string username = HttpContext.Session.GetString("username");
+            string username = "sahar";
+          if (_context.Contact == null)
           {
               return NotFound();
           }
-            return await _context.User.ToListAsync();
+
+            var list = _context.Contact
+                        .Where(x => x.User.UserName == username)
+                        .Select (x => new { x.id, x.name, x.server, x.last, x.lastdate }).ToArray();
+           
+            return list;
         }
 
         // GET: api/contacts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
+        public async Task<ActionResult<Contact>> GetContact(string id)
         {
-          if (_context.User == null)
+          if (_context.Contact == null)
           {
               return NotFound();
           }
-            var user = await _context.User.FindAsync(id);
+            var contact = await _context.Contact.FindAsync(id);
 
-            if (user == null)
+            if (contact == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return contact;
         }
 
         // PUT: api/contacts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(string id, User user)
+        public async Task<IActionResult> PutContact(string id, Contact contact)
         {
-            if (id != user.UserName)
+            if (id != contact.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(contact).State = EntityState.Modified;
 
             try
             {
@@ -68,7 +76,7 @@ namespace whatsappProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!ContactExists(id))
                 {
                     return NotFound();
                 }
@@ -84,20 +92,20 @@ namespace whatsappProject.Controllers
         // POST: api/contacts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<Contact>> PostContact(Contact contact)
         {
-          if (_context.User == null)
+          if (_context.Contact == null)
           {
-              return Problem("Entity set 'whatsappProjectContext.User'  is null.");
+              return Problem("Entity set 'whatsappProjectContext.Contact'  is null.");
           }
-            _context.User.Add(user);
+            _context.Contact.Add(contact);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (UserExists(user.UserName))
+                if (ContactExists(contact.id))
                 {
                     return Conflict();
                 }
@@ -107,32 +115,32 @@ namespace whatsappProject.Controllers
                 }
             }
 
-            return CreatedAtAction("GetUser", new { id = user.UserName }, user);
+            return CreatedAtAction("GetContact", new { id = contact.id }, contact);
         }
 
         // DELETE: api/contacts/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteContact(string id)
         {
-            if (_context.User == null)
+            if (_context.Contact == null)
             {
                 return NotFound();
             }
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            var contact = await _context.Contact.FindAsync(id);
+            if (contact == null)
             {
                 return NotFound();
             }
 
-            _context.User.Remove(user);
+            _context.Contact.Remove(contact);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(string id)
+        private bool ContactExists(string id)
         {
-            return (_context.User?.Any(e => e.UserName == id)).GetValueOrDefault();
+            return (_context.Contact?.Any(e => e.id == id)).GetValueOrDefault();
         }
     }
 }

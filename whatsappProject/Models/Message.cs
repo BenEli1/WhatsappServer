@@ -10,6 +10,11 @@ namespace whatsappProject.Models
         public string Date { get; set; }
 
         public string InOut { get; set; }
+        public Contact Contact { get; set; }
+
+
+
+
 
     }
 }

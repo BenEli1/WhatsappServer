@@ -19,5 +19,7 @@ namespace whatsappProject.Data
 
         public DbSet<whatsappProject.Models.User>? User { get; set; }
 
+        public DbSet<whatsappProject.Models.Contact>? Contact { get; set; }
+
     }
 }

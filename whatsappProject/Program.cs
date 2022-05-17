@@ -12,7 +12,10 @@ builder.Services.AddDbContext<whatsappProjectContext>(options =>
 
 builder.Services.AddScoped<IFeedBackService, FeedBackService>();
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(1);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,10 +26,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(1);
-});
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -35,6 +35,6 @@ app.UseAuthorization();
 app.UseSession();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=/api/contacts}/{action=Index}/{id?}");
 
 app.Run();
