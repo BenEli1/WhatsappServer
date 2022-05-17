@@ -5,7 +5,19 @@ using static whatsappProject.Controllers.IFeedBackService;
 using whatsappProject.Data;
 using whatsappProject.Controllers;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin().AllowAnyHeader()
+                    .AllowAnyMethod();
+                         
+                      });
+});
 
 builder.Services.AddDbContext<whatsappProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("whatsappProjectContext") ?? throw new InvalidOperationException("Connection string 'whatsappProjectContext' not found.")));
@@ -32,6 +44,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
 app.UseSession();
 app.UseSwagger();
