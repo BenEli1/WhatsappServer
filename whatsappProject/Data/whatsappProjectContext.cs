@@ -21,5 +21,9 @@ namespace whatsappProject.Data
 
         public DbSet<whatsappProject.Models.Contact>? Contact { get; set; }
 
+        public DbSet<whatsappProject.Models.Invitation>? Invitation { get; set; }
+
+        public DbSet<whatsappProject.Models.transfer>? transfer { get; set; }
+
     }
 }

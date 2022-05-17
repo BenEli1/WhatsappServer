@@ -42,20 +42,25 @@ namespace whatsappProject.Controllers
 
         // GET: api/contacts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Contact>> GetContact(string id)
+        public async Task<ActionResult<Object>> GetContact(string id)
         {
-          if (_context.Contact == null)
+
+            string username = HttpContext.Session.GetString("username");
+            if (_context.Contact == null)
           {
               return NotFound();
           }
-            var contact = await _context.Contact.FindAsync(id);
 
-            if (contact == null)
+            var contact = _context.Contact
+                        .Where(x => x.User.UserName == username && x.id == id)
+                        .Select(x => new { x.id, x.name, x.server, x.last, x.lastdate }).ToArray();
+
+            if (contact == null || contact.Length == 0)
             {
                 return NotFound();
             }
 
-            return contact;
+            return contact[0];
         }
 
         // PUT: api/contacts/5
@@ -63,7 +68,10 @@ namespace whatsappProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutContact(string id, Contact contact)
         {
-            if (id != contact.id)
+
+            string username = HttpContext.Session.GetString("username");
+
+            if (id != contact.id && contact.User.UserName != username)
             {
                 return BadRequest();
             }
@@ -94,7 +102,13 @@ namespace whatsappProject.Controllers
         [HttpPost]
         public async Task<ActionResult<Contact>> PostContact(Contact contact)
         {
-          if (_context.Contact == null)
+           string username = HttpContext.Session.GetString("username");
+            if (contact.User.UserName != username)
+            {
+                return BadRequest();
+            }
+
+            if (_context.Contact == null)
           {
               return Problem("Entity set 'whatsappProjectContext.Contact'  is null.");
           }
@@ -126,8 +140,11 @@ namespace whatsappProject.Controllers
             {
                 return NotFound();
             }
+
+            string username = HttpContext.Session.GetString("username");
+
             var contact = await _context.Contact.FindAsync(id);
-            if (contact == null)
+            if (contact == null || contact.User.UserName != username)
             {
                 return NotFound();
             }
@@ -141,6 +158,122 @@ namespace whatsappProject.Controllers
         private bool ContactExists(string id)
         {
             return (_context.Contact?.Any(e => e.id == id)).GetValueOrDefault();
+        }
+
+        // GET: api/contacts/alice/messages
+        [HttpGet("{id}/messages")]
+        public async Task<ActionResult<Object>> GetContactMessages(string id)
+        {
+
+            //string username = HttpContext.Session.GetString("username");
+            string username = "sahar";
+            if (_context.Contact == null)
+            {
+                return NotFound();
+            }
+
+            var contact = _context.Contact
+                        .Where(x => x.User.UserName == username && x.id == id)
+                        .Select(x => new {x.messages}).ToArray();
+
+            if (contact == null || contact.Length == 0)
+            {
+                return NotFound();
+            }
+
+            var mes = contact[0].messages.Where( x => true).Select(x => new { id = x.Id, content = x.Text, created = x.Date, sent = x.InOut });
+
+            return mes.ToList();
+        }
+
+        [HttpPost("{id}/messages")]
+        public async Task<IActionResult> PostMessage(string id, Message message)
+        {
+            var contact = await _context.Contact.FindAsync(id);
+            string username = HttpContext.Session.GetString("username");
+
+            if (contact == null || contact.User.UserName != username)
+            {
+                return BadRequest();
+            }
+
+            contact.messages.Add(message);
+
+            return await PutContact(id, contact);
+        }
+
+        [HttpGet("{id}/messages/{id2}")]
+        public async Task<ActionResult<Object>> GetSpecificMessage(string id, int id2)
+        {
+
+            //string username = HttpContext.Session.GetString("username");
+            string username = "sahar";
+            if (_context.Contact == null)
+            {
+                return NotFound();
+            }
+
+            var contact = _context.Contact
+                        .Where(x => x.User.UserName == username && x.id == id)
+                        .Select(x => new { x.messages }).ToArray();
+
+            if (contact == null || contact.Length == 0)
+            {
+                return NotFound();
+            }
+
+            var mes = contact[0].messages.Where(x => x.Id == id2).Select(x => new { id = x.Id, content = x.Text, created = x.Date, sent = x.InOut });
+
+            if (!mes.Any())
+            {
+                return NotFound();
+            }
+
+            return mes.ToList()[0];
+        }
+
+        [HttpDelete("{id}/messages/{id2}")]
+        public async Task<IActionResult> DeleteSpecificMessage(string id, int id2)
+        {
+
+            var contact = await _context.Contact.FindAsync(id);
+            string username = HttpContext.Session.GetString("username");
+
+            if (contact == null || contact.User.UserName != username)
+            {
+                return BadRequest();
+            }
+
+            Message toDelete = contact.messages.Find(x => x.Id == id2);
+
+            if (toDelete != null)
+            {
+                contact.messages.Remove(toDelete);
+            }
+
+            return await PutContact(id, contact);
+        }
+
+        [HttpPut("{id}/messages/{id2}")]
+        public async Task<IActionResult> PutSpecificMessage(string id, int id2, Message message)
+        {
+
+            var contact = await _context.Contact.FindAsync(id);
+            string username = HttpContext.Session.GetString("username");
+
+            if (contact == null || contact.User.UserName != username)
+            {
+                return BadRequest();
+            }
+
+            Message toDelete = contact.messages.Find(x => x.Id == id2);
+
+            if (toDelete != null)
+            {
+                contact.messages.Remove(toDelete);
+                contact.messages.Add(message);
+            }
+            return await PutContact(id, contact);
         }
     }
 }
