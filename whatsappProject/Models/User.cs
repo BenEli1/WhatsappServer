@@ -12,6 +12,8 @@ namespace whatsappProject.Models
 
         public string Image { get; set; }
 
+        public List<Contact> contacts { get; set; }
+
     }
 
 }
