@@ -11,7 +11,7 @@ using whatsappProject.Data;
 namespace whatsappProject.Migrations
 {
     [DbContext(typeof(whatsappProjectContext))]
-    [Migration("20220517091659_Init")]
+    [Migration("20220517130613_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,7 @@ namespace whatsappProject.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("last")
@@ -81,6 +82,31 @@ namespace whatsappProject.Migrations
                     b.ToTable("Grading");
                 });
 
+            modelBuilder.Entity("whatsappProject.Models.Invitation", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
+
+                    b.Property<string>("from")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("server")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("to")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Invitation");
+                });
+
             modelBuilder.Entity("whatsappProject.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -112,6 +138,31 @@ namespace whatsappProject.Migrations
                     b.ToTable("Message");
                 });
 
+            modelBuilder.Entity("whatsappProject.Models.transfer", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
+
+                    b.Property<string>("content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("from")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("to")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("transfer");
+                });
+
             modelBuilder.Entity("whatsappProject.Models.User", b =>
                 {
                     b.Property<string>("UserName")
@@ -129,6 +180,10 @@ namespace whatsappProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Server")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("UserName");
 
                     b.ToTable("User");
@@ -138,7 +193,9 @@ namespace whatsappProject.Migrations
                 {
                     b.HasOne("whatsappProject.Models.User", "User")
                         .WithMany("Contacts")
-                        .HasForeignKey("UserName");
+                        .HasForeignKey("UserName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

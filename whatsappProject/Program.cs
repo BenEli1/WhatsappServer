@@ -12,6 +12,7 @@ builder.Services.AddDbContext<whatsappProjectContext>(options =>
 
 builder.Services.AddScoped<IFeedBackService, FeedBackService>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddSwaggerGen();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(1);
@@ -33,6 +34,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=/api/contacts}/{action=Index}/{id?}");

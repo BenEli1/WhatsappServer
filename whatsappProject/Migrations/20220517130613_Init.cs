@@ -25,13 +25,44 @@ namespace whatsappProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Invitation",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    from = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    to = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    server = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invitation", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "transfer",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    from = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    to = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_transfer", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
                     UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NickName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Server = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,7 +78,7 @@ namespace whatsappProject.Migrations
                     server = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     last = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     lastdate = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,7 +87,8 @@ namespace whatsappProject.Migrations
                         name: "FK_Contact_User_UserName",
                         column: x => x.UserName,
                         principalTable: "User",
-                        principalColumn: "UserName");
+                        principalColumn: "UserName",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -98,7 +130,13 @@ namespace whatsappProject.Migrations
                 name: "Grading");
 
             migrationBuilder.DropTable(
+                name: "Invitation");
+
+            migrationBuilder.DropTable(
                 name: "Message");
+
+            migrationBuilder.DropTable(
+                name: "transfer");
 
             migrationBuilder.DropTable(
                 name: "Contact");
