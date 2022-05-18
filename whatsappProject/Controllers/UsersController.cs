@@ -21,14 +21,6 @@ namespace whatsappProject.Controllers
             _context = context;
         }
 
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login(string username)
-        {
-            HttpContext.Session.SetString("username", username);
-
-            return NoContent();
-        }
-
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
