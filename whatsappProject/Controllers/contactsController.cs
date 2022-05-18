@@ -21,15 +21,20 @@ namespace whatsappProject.Controllers
             _context = context;
         }
 
-        [HttpPut("Login")]
-        public async Task<IActionResult> Login([Bind("username")] String username)
+        public class UserSession
         {
-            if (username == null)
+            public string username { get; set; }    
+        }
+
+        [HttpPost("Login")]
+        public IActionResult PostLogin([FromBody] UserSession user)
+        {
+            if (user.username == null)
             {
                 return BadRequest();
             }
 
-            HttpContext.Session.SetString("username", username);
+            HttpContext.Session.SetString("username", user.username);
 
             return NoContent();
         }
@@ -39,8 +44,8 @@ namespace whatsappProject.Controllers
         public async Task<ActionResult<IEnumerable<Object>>> GetContact()
         {
 
-            //string username = HttpContext.Session.GetString("username");
-            string username = "sahar";
+          string username = HttpContext.Session.GetString("username");
+
           if (_context.Contact == null)
           {
               return NotFound();
