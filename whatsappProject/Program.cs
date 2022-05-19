@@ -25,10 +25,20 @@ builder.Services.AddDbContext<whatsappProjectContext>(options =>
 builder.Services.AddScoped<IFeedBackService, FeedBackService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(1);
+    options.Cookie.IsEssential = true;
 });
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => false;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,9 +56,10 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
-app.UseSession();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseSession();
+app.UseCookiePolicy();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=/api/contacts}/{action=Index}/{id?}");

@@ -39,6 +39,14 @@ namespace whatsappProject.Controllers
             return NoContent();
         }
 
+        [HttpGet("conected")]
+        public string GetUserConnected()
+        {
+            var username = HttpContext.Session.GetString("username");
+            return username;
+
+        }
+
         // GET: api/contacts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Object>>> GetContact()
