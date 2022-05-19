@@ -78,7 +78,8 @@ namespace whatsappProject.Migrations
                     server = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     last = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     lastdate = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    SecondSide = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -87,8 +88,7 @@ namespace whatsappProject.Migrations
                         name: "FK_Contact_User_UserName",
                         column: x => x.UserName,
                         principalTable: "User",
-                        principalColumn: "UserName",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserName");
                 });
 
             migrationBuilder.CreateTable(
@@ -100,7 +100,7 @@ namespace whatsappProject.Migrations
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InOut = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Contactid = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Contactid = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -109,8 +109,7 @@ namespace whatsappProject.Migrations
                         name: "FK_Message_Contact_Contactid",
                         column: x => x.Contactid,
                         principalTable: "Contact",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(

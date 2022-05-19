@@ -98,6 +98,7 @@ namespace whatsappProject.Controllers
             user.Image = Image;
             user.Server = Server;
             user.Contacts = new List<Contact>();*/
+            user.Contacts = new List<Contact>();
 
             _context.User.Add(user);
             try

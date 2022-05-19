@@ -26,19 +26,6 @@ namespace whatsappProject.Controllers
             public string username { get; set; }    
         }
 
-        [HttpPost("Login")]
-        public IActionResult PostLogin([FromBody] UserSession user)
-        {
-            if (user.username == null)
-            {
-                return BadRequest();
-            }
-
-            HttpContext.Session.SetString("username", user.username);
-
-            return NoContent();
-        }
-
         [HttpGet("conected")]
         public string GetUserConnected()
         {
@@ -49,10 +36,10 @@ namespace whatsappProject.Controllers
 
         // GET: api/contacts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Object>>> GetContact()
+        public async Task<ActionResult<IEnumerable<Object>>> GetContactSecondSide(string username)
         {
 
-          string username = HttpContext.Session.GetString("username");
+          //string username = HttpContext.Session.GetString("username");
 
           if (_context.Contact == null)
           {
@@ -60,7 +47,7 @@ namespace whatsappProject.Controllers
           }
 
             var list = _context.Contact
-                        .Where(x => x.User.UserName == username)
+                        .Where(x => x.SecondSide == username)
                         .Select (x => new { x.id, x.name, x.server, x.last, x.lastdate }).ToArray();
            
             return list;
@@ -78,7 +65,7 @@ namespace whatsappProject.Controllers
           }
 
             var contact = _context.Contact
-                        .Where(x => x.User.UserName == username && x.id == id)
+                        .Where(x => x.SecondSide == username && x.id == id)
                         .Select(x => new { x.id, x.name, x.server, x.last, x.lastdate }).ToArray();
 
             if (contact == null || contact.Length == 0)
@@ -92,12 +79,10 @@ namespace whatsappProject.Controllers
         // PUT: api/contacts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutContact(string id, Contact contact)
+        public async Task<IActionResult> PutContact(string id, Contact contact, string username)
         {
 
-            string username = HttpContext.Session.GetString("username");
-
-            if (id != contact.id && contact.User.UserName != username)
+            if (id != contact.id && contact.SecondSide != username)
             {
                 return BadRequest();
             }
@@ -129,7 +114,7 @@ namespace whatsappProject.Controllers
         public async Task<ActionResult<Contact>> PostContact(Contact contact)
         {
            string username = HttpContext.Session.GetString("username");
-            if (contact.User.UserName != username)
+            if (contact.SecondSide != username)
             {
                 return BadRequest();
             }
@@ -170,7 +155,7 @@ namespace whatsappProject.Controllers
             string username = HttpContext.Session.GetString("username");
 
             var contact = await _context.Contact.FindAsync(id);
-            if (contact == null || contact.User.UserName != username)
+            if (contact == null || contact.SecondSide != username)
             {
                 return NotFound();
             }
@@ -188,44 +173,55 @@ namespace whatsappProject.Controllers
 
         // GET: api/contacts/alice/messages
         [HttpGet("{id}/messages")]
-        public async Task<ActionResult<Object>> GetContactMessages(string id)
+        public async Task<ActionResult<Object>> GetContactMessages(string id, string username)
         {
 
             //string username = HttpContext.Session.GetString("username");
-            string username = "sahar";
+
             if (_context.Contact == null)
             {
                 return NotFound();
             }
 
             var contact = _context.Contact
-                        .Where(x => x.User.UserName == username && x.id == id)
-                        .Select(x => new {x.messages}).ToArray();
+                        .Where(x => x.SecondSide == username && x.id == id)
+                        .Select(x => x).ToArray();
 
             if (contact == null || contact.Length == 0)
             {
                 return NotFound();
             }
 
+            if(contact[0].messages == null)
+                return new List<object>();
+
             var mes = contact[0].messages.Where( x => true).Select(x => new { id = x.Id, content = x.Text, created = x.Date, sent = x.InOut });
 
             return mes.ToList();
         }
 
+ 
+      
+
         [HttpPost("{id}/messages")]
-        public async Task<IActionResult> PostMessage(string id, Message message)
+        public async Task<IActionResult> PostMessage(string id, string username, 
+            [FromBody]Message message)
         {
             var contact = await _context.Contact.FindAsync(id);
-            string username = HttpContext.Session.GetString("username");
 
-            if (contact == null || contact.User.UserName != username)
+            if (contact == null || contact.SecondSide != username)
             {
                 return BadRequest();
             }
 
+            contact.last = message.Text;
+            contact.lastdate = message.Date;
+
             contact.messages.Add(message);
 
-            return await PutContact(id, contact);
+            //_context.Message.Add(message);
+                
+            return await PutContact(id, contact, username);
         }
 
         [HttpGet("{id}/messages/{id2}")]
@@ -240,7 +236,7 @@ namespace whatsappProject.Controllers
             }
 
             var contact = _context.Contact
-                        .Where(x => x.User.UserName == username && x.id == id)
+                        .Where(x => x.SecondSide == username && x.id == id)
                         .Select(x => new { x.messages }).ToArray();
 
             if (contact == null || contact.Length == 0)
@@ -265,19 +261,19 @@ namespace whatsappProject.Controllers
             var contact = await _context.Contact.FindAsync(id);
             string username = HttpContext.Session.GetString("username");
 
-            if (contact == null || contact.User.UserName != username)
+            if (contact == null || contact.SecondSide != username)
             {
                 return BadRequest();
             }
 
-            Message toDelete = contact.messages.Find(x => x.Id == id2);
+            Message toDelete = contact.messages.Find(id2);
 
             if (toDelete != null)
             {
                 contact.messages.Remove(toDelete);
             }
 
-            return await PutContact(id, contact);
+            return await PutContact(id, contact, username);
         }
 
         [HttpPut("{id}/messages/{id2}")]
@@ -287,19 +283,19 @@ namespace whatsappProject.Controllers
             var contact = await _context.Contact.FindAsync(id);
             string username = HttpContext.Session.GetString("username");
 
-            if (contact == null || contact.User.UserName != username)
+            if (contact == null || contact.SecondSide != username)
             {
                 return BadRequest();
             }
 
-            Message toDelete = contact.messages.Find(x => x.Id == id2);
+            Message toDelete = contact.messages.Find(id2);
 
             if (toDelete != null)
             {
                 contact.messages.Remove(toDelete);
                 contact.messages.Add(message);
             }
-            return await PutContact(id, contact);
+            return await PutContact(id, contact, username);
         }
     }
 }

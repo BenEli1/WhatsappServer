@@ -26,8 +26,11 @@ namespace whatsappProject.Migrations
                     b.Property<string>("id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("SecondSide")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("last")
@@ -114,7 +117,6 @@ namespace whatsappProject.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Contactid")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Date")
@@ -189,24 +191,16 @@ namespace whatsappProject.Migrations
 
             modelBuilder.Entity("whatsappProject.Models.Contact", b =>
                 {
-                    b.HasOne("whatsappProject.Models.User", "User")
+                    b.HasOne("whatsappProject.Models.User", null)
                         .WithMany("Contacts")
-                        .HasForeignKey("UserName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                        .HasForeignKey("UserName");
                 });
 
             modelBuilder.Entity("whatsappProject.Models.Message", b =>
                 {
-                    b.HasOne("whatsappProject.Models.Contact", "Contact")
+                    b.HasOne("whatsappProject.Models.Contact", null)
                         .WithMany("messages")
-                        .HasForeignKey("Contactid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Contact");
+                        .HasForeignKey("Contactid");
                 });
 
             modelBuilder.Entity("whatsappProject.Models.Contact", b =>
