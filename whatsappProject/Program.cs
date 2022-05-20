@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using static whatsappProject.Controllers.FeedBackService;
 using static whatsappProject.Controllers.IFeedBackService;
-using whatsappProject.Data;
 using whatsappProject.Controllers;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -19,10 +18,12 @@ builder.Services.AddCors(options =>
                       });
 });
 
-builder.Services.AddDbContext<whatsappProjectContext>(options =>
+/*builder.Services.AddDbContext<whatsappProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("whatsappProjectContext") ?? throw new InvalidOperationException("Connection string 'whatsappProjectContext' not found.")));
-
+*/
 builder.Services.AddScoped<IFeedBackService, FeedBackService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDistributedMemoryCache();

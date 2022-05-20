@@ -3,6 +3,7 @@ namespace whatsappProject.Models
 {
     public class User
     {
+
         [Key]
         public string UserName { get; set; }
 

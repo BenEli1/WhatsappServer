@@ -5,42 +5,110 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using whatsappProject.Data;
 using whatsappProject.Models;
+
 
 namespace whatsappProject.Controllers
 {
+          public interface IUserService
+    {
+        IEnumerable<User> GetAllUsers();
+        User GetUser(string Username);
+
+        void DeleteUser(string Username);
+
+        void UpdateUser(string Username, string nickname, string password, string image,string server,List<Contact>contacts);
+
+        void CreateUser(User User);
+        List<Contact> GetContacts(string Username);
+
+
+    }
+     public class UserService : IUserService
+    {
+        /*  public string id { get; set; }
+          public string name { get; set; }
+          public string server { get; set; }
+          public string last { get; set; }
+          public string lastdate { get; set; }
+          public List<Message> Messages { get; set; }*/
+        private static List<User> _Users = new List<User>();
+        public void CreateUser(User User)
+        {
+            _Users.Add(User);
+        }
+
+        public void DeleteUser(string Username)
+        {
+            User f = _Users.Find(x => x.UserName == Username);
+            if (f != null)
+            {
+                _Users.Remove(_Users.Find(x => x.UserName == Username));
+            }
+        }
+
+        public IEnumerable<User> GetAllUsers()
+        {
+            return _Users;
+        }
+
+        public User GetUser(string Username)
+        {
+            return _Users.Find(x => x.UserName == Username);
+
+        }
+        public List<Contact>  GetContacts(string Username)
+        {
+            return _Users.Find(x => x.UserName == Username).Contacts;
+
+        }
+
+        public void UpdateUser(string Username, string nickname, string password, string image, string server, List<Contact> contacts)
+        {
+            User f = GetUser(Username);
+            if (f != null)
+            {
+                f.UserName = Username;
+                f.NickName = nickname;
+                f.Password= password;
+                f.Image= image;
+                f.Server= server;
+                f.Contacts = contacts;
+            }
+        }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly whatsappProjectContext _context;
+        private readonly IUserService _context;
 
-        public UsersController(whatsappProjectContext context)
+        public UsersController(IUserService context)
         {
             _context = context;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public IEnumerable<User> getUserList()
         {
-          if (_context.User == null)
-          {
-              return NotFound();
-          }
-            return await _context.User.ToListAsync();
+            if (_context == null)
+            {
+                return (IEnumerable<User>)NotFound();
+            }
+            var users = _context.GetAllUsers();
+            return users;
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(string id)
         {
-          if (_context.User == null)
+          if (_context == null)
           {
               return NotFound();
           }
-            var user = await _context.User.FindAsync(id);
+            var user =  _context.GetUser(id);
 
             if (user == null)
             {
@@ -60,11 +128,9 @@ namespace whatsappProject.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -86,7 +152,7 @@ namespace whatsappProject.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser([Bind("UserName", "NickName", "Password", "Image", "Server")] User user)
         {
-            if(_context.User == null)
+            if(_context == null)
             {
                 return NotFound();
             }
@@ -97,52 +163,35 @@ namespace whatsappProject.Controllers
             user.Password = Password;
             user.Image = Image;
             user.Server = Server;
-            user.Contacts = new List<Contact>();*/
-            user.Contacts = new List<Contact>();
-
-            _context.User.Add(user);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UserExists(user.UserName))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            user.Users = new List<User>();*/
+            user.Contacts=new List<Contact>();
+            _context.CreateUser(user);
 
             return CreatedAtAction("GetUser", new { id = user.UserName }, user);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteCertainUser(string id)
         {
-            if (_context.User == null)
+            if (_context == null)
             {
                 return NotFound();
             }
-            var user = await _context.User.FindAsync(id);
+            var user = _context.GetUser(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
+            _context.DeleteUser(id);
 
             return NoContent();
         }
 
         private bool UserExists(string id)
         {
-            return (_context.User?.Any(e => e.UserName == id)).GetValueOrDefault();
+            return (_context.GetAllUsers().Any(e => e.UserName == id));
         }
     }
 }

@@ -5,18 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using whatsappProject.Data;
 using whatsappProject.Models;
-
+/*
 namespace whatsappProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class transferController : ControllerBase
     {
-        private readonly whatsappProjectContext _context;
+        private readonly IUserService _context;
 
-        public transferController(whatsappProjectContext context)
+        public transferController(IUserService context)
         {
             _context = context;
         }
@@ -122,3 +121,4 @@ namespace whatsappProject.Controllers
         }
     }
 }
+*/
