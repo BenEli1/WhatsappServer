@@ -26,6 +26,7 @@ namespace whatsappProject.Controllers
           public string lastdate { get; set; }
           public List<Message> Messages { get; set; }*/
         private static List<User> _Users = new List<User>();
+
         public void CreateUser(User User)
         {
             _Users.Add(User);
@@ -71,14 +72,20 @@ namespace whatsappProject.Controllers
         }
     }
 
+
     [Route("api/[controller]")]
     [ApiController]
-    public class contactsController : ControllerBase
+    public class UsersController : Controller
     {
-        private readonly IUserService _context;
+        private static IUserService _context;
 
-        // GET: api/contacts/Users
-        [HttpGet("Users")]
+        public UsersController(IUserService context)
+        {
+            _context = context;
+        }
+
+        // GET: api/Users
+        [HttpGet]
         public IEnumerable<User> getUserList()
         {
             if (_context == null)
@@ -86,11 +93,12 @@ namespace whatsappProject.Controllers
                 return (IEnumerable<User>)NotFound();
             }
             var users = _context.GetAllUsers();
+
             return users;
         }
 
-        // GET: api/contacts/Users/5
-        [HttpGet("Users/{id}")]
+        // GET: api/Users/5
+        [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(string id)
         {
             if (_context == null)
@@ -109,17 +117,16 @@ namespace whatsappProject.Controllers
 
         // PUT: api/contacts/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("Users/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(string id, User user)
         {
             if (id != user.UserName)
             {
                 return BadRequest();
             }
-
-
             try
             {
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -136,9 +143,9 @@ namespace whatsappProject.Controllers
             return NoContent();
         }
 
-        // POST: api/contacts/Users
+        // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("Users")]
+        [HttpPost]
         public async Task<ActionResult<User>> PostUser([Bind("UserName", "NickName", "Password", "Image", "Server")] User user)
         {
             if (_context == null)
@@ -159,8 +166,8 @@ namespace whatsappProject.Controllers
             return CreatedAtAction("GetUser", new { id = user.UserName }, user);
         }
 
-        // DELETE: api/contacts/Users/5
-        [HttpDelete("Users/{id}")]
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCertainUser(string id)
         {
             if (_context == null)
@@ -182,7 +189,23 @@ namespace whatsappProject.Controllers
         {
             return (_context.GetAllUsers().Any(e => e.UserName == id));
         }
+    }
 
+
+/// <summary>
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// </summary>
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class contactsController : ControllerBase
+    {
+        private readonly IUserService _context;
+
+        public contactsController(IUserService _context)
+        {
+            this._context = _context;   
+        }
 
         public class UserSession
         {
