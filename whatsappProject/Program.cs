@@ -3,12 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using static whatsappProject.Controllers.FeedBackService;
 using static whatsappProject.Controllers.IFeedBackService;
 using whatsappProject.Controllers;
+using whatsappProject.Hubs;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IUserService>(new UserService());
 
+builder.Services.AddSingleton<IUserService>(new UserService());
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -56,6 +58,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.MapHub<ChatHub>("/chatHub");
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
