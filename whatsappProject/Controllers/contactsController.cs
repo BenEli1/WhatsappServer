@@ -38,8 +38,7 @@ namespace whatsappProject.Controllers
         public void AddInvitation(Invitation invitation);
 
         public List<Invitation> GetAllInvitations();
-        
-
+        int getId();
     }
 
 
@@ -51,7 +50,8 @@ namespace whatsappProject.Controllers
     {
         private static List<User> _Users = new List<User>();
         private static List<transfer> _Transfer = new List<transfer>();
-        private static List<Invitation> _Invitations = new List<Invitation>();  
+        private static List<Invitation> _Invitations = new List<Invitation>();
+        private static int countingId = 0;
 
 
         public List<transfer> GetAllTransfers()
@@ -146,6 +146,12 @@ namespace whatsappProject.Controllers
         public List<Invitation> GetAllInvitations()
         {
             return _Invitations;    
+        }
+
+        public int getId()
+        {
+            countingId++;
+           return countingId;
         }
     }
 
