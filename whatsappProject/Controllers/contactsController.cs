@@ -170,43 +170,8 @@ namespace whatsappProject.Controllers
         public UsersController(IUserService context)
         {
             _context = context;
-
-            //hardcoded list for debug
-            _context.CreateUser(new User
-            {
-                Image = "sss",
-                NickName = "sahar",
-                UserName = "sahar",
-                Password = "123456R",
-                Server = "",
-                Contacts = new List<Contact>()
-            });
-
-            _context.AddContact("sahar", new Contact
-            {
-                id = "ben",
-                last = "hii",
-                lastdate = "35.4",
-                server = "localhost:7227",
-                Messages = new List<Message>()
-            });
-
-            _context.AddMessage(new Message
-            {
-                Text = "gggg",
-                Date = "45.5",
-                Id = 3,
-                InOut = "true"
-            }, "sahar", "ben");
-
-            _context.AddMessage(new Message
-            {
-                Text = "eeeeee",
-                Date = "4eee5.5",
-                Id = 3,
-                InOut = "false"
-            }, "sahar", "ben");
         }
+
 
         // GET: api/Users
         [HttpGet]

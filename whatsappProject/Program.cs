@@ -4,22 +4,26 @@ using static whatsappProject.Controllers.FeedBackService;
 using static whatsappProject.Controllers.IFeedBackService;
 using whatsappProject.Controllers;
 using whatsappProject.Hubs;
+using Microsoft.AspNetCore.Builder;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddSingleton<IUserService>(new UserService());
-builder.Services.AddSignalR();
+builder.Services.AddSingleton<ChatHub>(new ChatHub());
+
+builder.Services.AddRazorPages();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.AllowAnyOrigin().AllowAnyHeader()
-                    .AllowAnyMethod();
-                         
+                          policy.AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .WithOrigins("http://localhost:3000")
+                              .AllowCredentials();
                       });
 });
 
@@ -28,7 +32,7 @@ builder.Services.AddCors(options =>
 */
 builder.Services.AddScoped<IFeedBackService, FeedBackService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDistributedMemoryCache();
@@ -58,8 +62,9 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ChatHub>("/Hubs/chatHub");
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
