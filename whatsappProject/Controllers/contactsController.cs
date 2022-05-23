@@ -38,8 +38,6 @@ namespace whatsappProject.Controllers
         public void AddInvitation(Invitation invitation);
 
         public List<Invitation> GetAllInvitations();
-
-        public transfer GetLastTransfer();
         
 
     }
@@ -53,12 +51,9 @@ namespace whatsappProject.Controllers
     {
         private static List<User> _Users = new List<User>();
         private static List<transfer> _Transfer = new List<transfer>();
-        private static List<Invitation> _Invitations = new List<Invitation>();
+        private static List<Invitation> _Invitations = new List<Invitation>();  
 
-        public transfer GetLastTransfer()
-        {
-            return _Transfer.Last();
-        }
+
         public List<transfer> GetAllTransfers()
         {
             return _Transfer;
@@ -441,6 +436,7 @@ namespace whatsappProject.Controllers
         public async Task<IActionResult> PostMessage(string id, string username,
             [FromBody] Message message)
         {
+            message.Id = _context.getId();
             _context.AddMessage(message, username, id);
 
             return NoContent();
@@ -455,15 +451,13 @@ namespace whatsappProject.Controllers
                 return NotFound();
             }
 
-            var contact = _context.GetContacts(username)
-                        .Where(x => x.id == id)
-                        .Select(x => new { x.Messages }).ToArray();
-
-            if (contact == null || contact.Length == 0)
+            var contact = _context.GetContact(username, id);
+            var message=contact.Messages.Find(x => x.Id == id2);
+            if (message == null)
             {
                 return NotFound();
             }
-            return contact;
+            return message;
         }
 
         [HttpDelete("{id}/messages/{id2}")]
