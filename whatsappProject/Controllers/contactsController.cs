@@ -30,6 +30,11 @@ namespace whatsappProject.Controllers
         public void AddContact(string username, Contact Contact);
 
         public void AddMessage(Message Message, string username, string contactName);
+
+        public void AddTransfer(transfer transfer);
+
+        public List<transfer> GetAllTransfers();
+
     }
 
 
@@ -40,7 +45,11 @@ namespace whatsappProject.Controllers
     public class UserService : IUserService
     {
         private static List<User> _Users = new List<User>();
-
+        private static List<transfer> _Transfer = new List<transfer>();
+        public List<transfer> GetAllTransfers()
+        {
+            return _Transfer;
+        }
         public void CreateUser(User User)
         {
             _Users.Add(User);
@@ -83,6 +92,11 @@ namespace whatsappProject.Controllers
                 f.Server = server;
                 f.Contacts = contacts;
             }
+        }
+
+        public void AddTransfer(transfer transfer)
+        {
+            _Transfer.Add(transfer);
         }
 
         public List<Message> GetMessages(string Username, string contactName)
@@ -149,6 +163,7 @@ namespace whatsappProject.Controllers
                 id = "ben",
                 last = "hii",
                 lastdate = "35.4",
+                server = "localhost:7227",
                 Messages = new List<Message>()
             });
 

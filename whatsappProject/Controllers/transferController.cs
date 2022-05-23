@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using whatsappProject.Models;
-/*
+using whatsappProject.Controllers;
+
 namespace whatsappProject.Controllers
 {
     [Route("api/[controller]")]
@@ -24,15 +25,15 @@ namespace whatsappProject.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<transfer>>> Gettransfer()
         {
-          if (_context.transfer == null)
+          if (_context.GetAllTransfers() == null)
           {
               return NotFound();
           }
-            return await _context.transfer.ToListAsync();
+            return _context.GetAllTransfers();
         }
 
         // GET: api/transfer/5
-        [HttpGet("{id}")]
+        /*[HttpGet("{id}")]
         public async Task<ActionResult<transfer>> Gettransfer(int id)
         {
           if (_context.transfer == null)
@@ -78,25 +79,20 @@ namespace whatsappProject.Controllers
             }
 
             return NoContent();
-        }
+        }*/
 
         // POST: api/transfer
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<transfer>> Posttransfer(transfer transfer)
+        public async Task<ActionResult<transfer>> Posttransfer([FromBody]transfer transfer)
         {
-          if (_context.transfer == null)
-          {
-              return Problem("Entity set 'whatsappProjectContext.transfer'  is null.");
-          }
-            _context.transfer.Add(transfer);
-            await _context.SaveChangesAsync();
+            _context.AddTransfer(transfer);
 
-            return CreatedAtAction("Gettransfer", new { id = transfer.id }, transfer);
+            return NoContent();
         }
 
         // DELETE: api/transfer/5
-        [HttpDelete("{id}")]
+        /*[HttpDelete("{id}")]
         public async Task<IActionResult> Deletetransfer(int id)
         {
             if (_context.transfer == null)
@@ -118,7 +114,6 @@ namespace whatsappProject.Controllers
         private bool transferExists(int id)
         {
             return (_context.transfer?.Any(e => e.id == id)).GetValueOrDefault();
-        }
+        }*/
     }
 }
-*/
