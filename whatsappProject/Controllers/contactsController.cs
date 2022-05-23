@@ -35,6 +35,11 @@ namespace whatsappProject.Controllers
 
         public List<transfer> GetAllTransfers();
 
+        public void AddInvitation(Invitation invitation);
+
+        public List<Invitation> GetAllInvitations();
+        
+
     }
 
 
@@ -46,6 +51,9 @@ namespace whatsappProject.Controllers
     {
         private static List<User> _Users = new List<User>();
         private static List<transfer> _Transfer = new List<transfer>();
+        private static List<Invitation> _Invitations = new List<Invitation>();  
+
+
         public List<transfer> GetAllTransfers()
         {
             return _Transfer;
@@ -129,6 +137,15 @@ namespace whatsappProject.Controllers
             contact.Messages.Add(message);
             contact.last = message.Text;
             contact.lastdate = message.Date;
+        }
+        public void AddInvitation(Invitation invitation)
+        {
+            _Invitations.Add(invitation);
+        }
+
+        public List<Invitation> GetAllInvitations()
+        {
+            return _Invitations;    
         }
     }
 
