@@ -87,7 +87,9 @@ namespace whatsappProject.Controllers
         public async Task<ActionResult<Invitation>> PostInvitation(Invitation invitation)
         {
             _hub.SendContact(invitation.to, invitation.from, invitation.server);
+
             _context.AddInvitation(invitation);
+
           return NoContent();
         }
 

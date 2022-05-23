@@ -126,8 +126,10 @@ namespace whatsappProject.Controllers
 
         public void AddContact(string username, Contact Contact)
         {
-            Contact.Messages = new List<Message>();
             User user = GetUser(username);
+            if (user.Contacts.Find(x => x.id == Contact.id) != null)
+                return;
+            Contact.Messages = new List<Message>();
             user.Contacts.Add(Contact);
         }
 

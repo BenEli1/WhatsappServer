@@ -6,6 +6,11 @@
       "provider": "unpkg",
       "library": "@microsoft/signalr@6.0.5",
       "destination": "wwwroot/lib/microsoft/signalr/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "@microsoft/signalr@6.0.5",
+      "destination": "wwwroot/lib/microsoft/signalr/"
     }
   ]
 }
