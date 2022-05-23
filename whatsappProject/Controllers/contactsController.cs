@@ -118,6 +118,7 @@ namespace whatsappProject.Controllers
 
         public void AddContact(string username, Contact Contact)
         {
+            Contact.Messages = new List<Message>();
             User user = GetUser(username);
             user.Contacts.Add(Contact);
         }
@@ -363,13 +364,13 @@ namespace whatsappProject.Controllers
         // POST: api/contacts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Contact>> PostContact(Contact contact, string username)
+        public async Task<ActionResult<Contact>> PostContact([FromBody]Contact contact, string username)
         {
-
             if (_context.GetContacts(username) == null)
             {
                 return Problem("Entity set 'whatsappProjectContext.Contact'  is null.");
             }
+
             _context.AddContact(username, contact);
 
             return CreatedAtAction("GetContact", new { id = contact.id }, contact);
