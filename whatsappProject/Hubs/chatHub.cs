@@ -10,5 +10,9 @@ namespace whatsappProject.Hubs
         {
             await Clients.All.SendAsync("ReceiveMessage", user, contactName, message);
         }
+        public async Task SendContact(string user, string contactName, string server)
+        {
+            await Clients.All.SendAsync("ReceiveContact", user, contactName, server);
+        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using whatsappProject.Models;
+using whatsappProject.Hubs;
 
 namespace whatsappProject.Controllers
 {
@@ -14,10 +15,12 @@ namespace whatsappProject.Controllers
     public class invitationsController : ControllerBase
     {
         private readonly IUserService _context;
+        private readonly ChatHub _hub;
 
-        public invitationsController(IUserService context)
+        public invitationsController(IUserService context, ChatHub chathub)
         {
             _context = context;
+            _hub = chathub;
         }
 
         // GET: api/invitations
@@ -76,13 +79,15 @@ namespace whatsappProject.Controllers
 
             return NoContent();
         }*/
-
+        
+         
         // POST: api/invitations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Invitation>> PostInvitation(Invitation invitation)
         {
-          _context.AddInvitation(invitation);
+            _hub.SendContact(invitation.to, invitation.from, invitation.server);
+            _context.AddInvitation(invitation);
           return NoContent();
         }
 

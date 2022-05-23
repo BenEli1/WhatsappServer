@@ -16,7 +16,7 @@ namespace whatsappProject.Controllers
     public class transferController : ControllerBase
     {
         private readonly IUserService _context;
-        private ChatHub _hub;
+        private readonly ChatHub _hub;
 
         public transferController(IUserService context, ChatHub chathub)
         {
