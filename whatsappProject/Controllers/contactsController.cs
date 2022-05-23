@@ -38,6 +38,8 @@ namespace whatsappProject.Controllers
         public void AddInvitation(Invitation invitation);
 
         public List<Invitation> GetAllInvitations();
+
+        public transfer GetLastTransfer();
         
 
     }
@@ -51,9 +53,12 @@ namespace whatsappProject.Controllers
     {
         private static List<User> _Users = new List<User>();
         private static List<transfer> _Transfer = new List<transfer>();
-        private static List<Invitation> _Invitations = new List<Invitation>();  
+        private static List<Invitation> _Invitations = new List<Invitation>();
 
-
+        public transfer GetLastTransfer()
+        {
+            return _Transfer.Last();
+        }
         public List<transfer> GetAllTransfers()
         {
             return _Transfer;

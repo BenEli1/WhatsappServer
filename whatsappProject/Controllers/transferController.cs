@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using whatsappProject.Models;
 using whatsappProject.Controllers;
+using whatsappProject.Hubs;
 
 namespace whatsappProject.Controllers
 {
@@ -15,10 +16,12 @@ namespace whatsappProject.Controllers
     public class transferController : ControllerBase
     {
         private readonly IUserService _context;
+        private ChatHub _hub;
 
-        public transferController(IUserService context)
+        public transferController(IUserService context, ChatHub chathub)
         {
             _context = context;
+            _hub = chathub;
         }
 
         // GET: api/transfer
@@ -87,6 +90,8 @@ namespace whatsappProject.Controllers
         public async Task<ActionResult<transfer>> Posttransfer([FromBody]transfer transfer)
         {
             _context.AddTransfer(transfer);
+
+            _hub.SendMessage(transfer.to, transfer.from, transfer.content);
 
             return NoContent();
         }
