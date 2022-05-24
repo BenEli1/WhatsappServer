@@ -342,11 +342,12 @@ namespace whatsappProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutContact(string id, Contact contact, string username)
         {
-
-            if (id != contact.id)
-            {
-                return BadRequest();
-            }
+            Contact newContact = _context.GetContact(username, id);
+            newContact.id = contact.id; 
+            newContact.name = contact.name; 
+            newContact.server = contact.server;     
+            newContact.last = contact.last; 
+            newContact.lastdate = contact.lastdate; 
 
             return NoContent();
         }
@@ -368,16 +369,11 @@ namespace whatsappProject.Controllers
 
         // DELETE: api/contacts/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteContact(string id)
+        public async Task<IActionResult> DeleteContact(string id, string username)
         {
-            string username = HttpContext.Session.GetString("username");
-            if (_context.GetContacts(username) == null)
-            {
-                return NotFound();
-            }
+            Contact contact = _context.GetContact(username, id);
 
-            var contact = _context.GetContacts(username).Find(x => x.id == id);
-            if (contact == null)
+            if ( contact == null)
             {
                 return NotFound();
             }
@@ -385,12 +381,6 @@ namespace whatsappProject.Controllers
             _context.GetContacts(username).Remove(contact);
 
             return NoContent();
-        }
-
-        private bool ContactExists(string id)
-        {
-            string username = HttpContext.Session.GetString("username");
-            return (_context.GetContacts(username).Any(e => e.id == id));
         }
 
         // GET: api/contacts/alice/messages
@@ -434,11 +424,9 @@ namespace whatsappProject.Controllers
         }
 
         [HttpDelete("{id}/messages/{id2}")]
-        public async Task<IActionResult> DeleteSpecificMessage(string id, int id2)
+        public async Task<IActionResult> DeleteSpecificMessage(string id, int id2, string username)
         {
-            string username = HttpContext.Session.GetString("username");
-
-            var contact = _context.GetContacts(username).Find(x => x.id == id);
+            var contact = _context.GetContact(username, id);
 
             if (contact == null)
             {
@@ -452,15 +440,14 @@ namespace whatsappProject.Controllers
                 contact.Messages.Remove(toDelete);
             }
 
-            return await PutContact(id, contact, username);
+            return NoContent();
         }
 
         [HttpPut("{id}/messages/{id2}")]
-        public async Task<IActionResult> PutSpecificMessage(string id, int id2, Message message)
+        public async Task<IActionResult> PutSpecificMessage(string id, int id2, Message message, string username)
         {
-            string username = HttpContext.Session.GetString("username");
 
-            var contact = _context.GetContacts(username).Find(x => x.id == id);
+            var contact = _context.GetContact(username, id);
 
             if (contact == null)
             {
@@ -474,7 +461,7 @@ namespace whatsappProject.Controllers
                 contact.Messages.Remove(toDelete);
                 contact.Messages.Add(message);
             }
-            return await PutContact(id, contact, username);
+            return NoContent();
         }
     }
 }
