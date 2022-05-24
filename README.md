@@ -1,4 +1,4 @@
-# whatsappProject-Server-Side - Second Task
+# whatsappProject-Server-Side
 
 1.added a feedback page, included a button to the page from every page that directs us to localhost:7227 using the feedbacks controller.
 
