@@ -5,15 +5,17 @@ using static whatsappProject.Controllers.IFeedBackService;
 using whatsappProject.Controllers;
 using whatsappProject.Hubs;
 using Microsoft.AspNetCore.Builder;
+using whatsappProject.Data;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddSingleton<IUserService>(new UserService());
+//builder.Services.AddSingleton<IUserService>(new DataBase());
 builder.Services.AddSingleton<ChatHub>(new ChatHub());
 
 builder.Services.AddRazorPages();
+builder.Services.AddDbContext<whatsappProjectContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("whatsappProjectContext") ?? throw new InvalidOperationException("Connection string 'whatsappProjectContext' not found.")));
 
 builder.Services.AddCors(options =>
 {
@@ -31,7 +33,7 @@ builder.Services.AddCors(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("whatsappProjectContext") ?? throw new InvalidOperationException("Connection string 'whatsappProjectContext' not found.")));
 */
 builder.Services.AddScoped<IFeedBackService, FeedBackService>();
-builder.Services.AddScoped<IUserService, UserService>();
+//builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();

@@ -1,227 +1,82 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using whatsappProject.Data;
 using whatsappProject.Models;
 
 namespace whatsappProject.Controllers
 {
-
-
-    /// <summary>
-    /// /////////////////////  the interface ////////////////////////////////////////////////////////////
-    /// </summary>
-    public interface IUserService
-    {
-        public IEnumerable<User> GetAllUsers();
-
-        public User GetUser(string Username);
-
-        public void DeleteUser(string Username);
-
-        public void UpdateUser(string Username, string nickname, string password, string image, string server, List<Contact> contacts);
-        
-        public void CreateUser(User User);
-        
-        public List<Contact> GetContacts(string Username);
-
-        public List<Message> GetMessages(string Username, string contactName);
-
-        public Contact GetContact(string Username, string contactName);
-
-        public void AddContact(string username, Contact Contact);
-
-        public void AddMessage(Message Message, string username, string contactName);
-
-        public void AddTransfer(transfer transfer);
-
-        public List<transfer> GetAllTransfers();
-
-        public void AddInvitation(Invitation invitation);
-
-        public List<Invitation> GetAllInvitations();
-        int getId();
-    }
-
-
-    /// <summary>
-    /// ///////////////// the class implements the interface ////////////////////////////////////
-    /// </summary>
-
-    public class UserService : IUserService
-    {
-        private static List<User> _Users = new List<User>();
-        private static List<transfer> _Transfer = new List<transfer>();
-        private static List<Invitation> _Invitations = new List<Invitation>();
-        private static int countingId = 0;
-
-
-        public List<transfer> GetAllTransfers()
-        {
-            return _Transfer;
-        }
-        public void CreateUser(User User)
-        {
-            _Users.Add(User);
-        }
-
-        public void DeleteUser(string Username)
-        {
-            User f = _Users.Find(x => x.UserName == Username);
-            if (f != null)
-            {
-                _Users.Remove(_Users.Find(x => x.UserName == Username));
-            }
-        }
-
-        public IEnumerable<User> GetAllUsers()
-        {
-            return _Users;
-        }
-
-        public User GetUser(string Username)
-        {
-            return _Users.Find(x => x.UserName == Username);
-
-        }
-        public List<Contact> GetContacts(string Username)
-        {
-            return _Users.Find(x => x.UserName == Username).Contacts;
-
-        }
-
-        public void UpdateUser(string Username, string nickname, string password, string image, string server, List<Contact> contacts)
-        {
-            User f = GetUser(Username);
-            if (f != null)
-            {
-                f.UserName = Username;
-                f.NickName = nickname;
-                f.Password = password;
-                f.Image = image;
-                f.Server = server;
-                f.Contacts = contacts;
-            }
-        }
-
-        public void AddTransfer(transfer transfer)
-        {
-            _Transfer.Add(transfer);
-        }
-
-        public List<Message> GetMessages(string Username, string contactName)
-        {
-            Contact contact = GetContact(Username, contactName);
-            if (contact == null) return null;
-            return contact.Messages;
-        }
-
-        public Contact GetContact(string Username, string contactName)
-        {
-            User user = GetUser(Username);
-            if (user == null)
-                return null;
-
-            Contact contact = user.Contacts.Find(x => x.id == contactName);
-            return contact;
-        }
-
-        public void AddContact(string username, Contact Contact)
-        {
-            User user = GetUser(username);
-            if (user.Contacts.Find(x => x.id == Contact.id) != null)
-                return;
-            Contact.Messages = new List<Message>();
-            user.Contacts.Add(Contact);
-        }
-
-        public void AddMessage(Message message, string username, string contactName)
-        {
-            Contact contact = GetContact(username, contactName);
-            contact.Messages.Add(message);
-            contact.last = message.Text;
-            contact.lastdate = message.Date;
-        }
-        public void AddInvitation(Invitation invitation)
-        {
-            _Invitations.Add(invitation);
-        }
-
-        public List<Invitation> GetAllInvitations()
-        {
-            return _Invitations;    
-        }
-
-        public int getId()
-        {
-            countingId++;
-           return countingId;
-        }
-    }
-
-
-    /// <summary>
-    /// /////////////////////////////////   user controller ///////////////////////////////////////////////
-    /// </summary>
-
-
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : Controller
+    public class contactsController : ControllerBase
     {
-        private IUserService _context;
+        private readonly whatsappProjectContext _context;
 
-        public UsersController(IUserService context)
+        public contactsController(whatsappProjectContext context)
         {
             _context = context;
         }
 
-
-        // GET: api/Users
+        // GET: api/contacts
         [HttpGet]
-        public IEnumerable<User> getUserList()
+        public async Task<ActionResult<IEnumerable<Object>>> GetContact(string username)
         {
-            if (_context == null)
-            {
-                return (IEnumerable<User>)NotFound();
-            }
-            var users = _context.GetAllUsers();
 
-            return users;
+          if (_context.Contact == null)
+          {
+              return new List<Object>();
+          }
+
+            var contacts = await _context.Contact.ToArrayAsync();
+            var List = from c in contacts
+                       where c.UserName == username 
+                       select new { c.id, c.name, c.server, c.last, c.lastdate };
+
+            return List.ToArray();
         }
 
-        // GET: api/Users/5
+        // GET: api/contacts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
+        public async Task<ActionResult<Object>> GetContact(string id, string username)
         {
-            if (_context == null)
-            {
-                return NotFound();
-            }
-            var user = _context.GetUser(id);
-
-            if (user == null)
+            if (_context.User == null || _context.User.FindAsync(username) == null || _context.Contact == null)
             {
                 return NotFound();
             }
 
-            return user;
+            var contacts = await _context.Contact.ToArrayAsync();
+            var List = from c in contacts
+                       where c.UserName == username && c.id == id
+                       select new { c.id, c.name, c.server, c.last, c.lastdate };
+
+            var contact = List.FirstOrDefault();
+
+            return contact;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/contacts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(string id, User user)
+        public async Task<IActionResult> PutContact(string id, Contact contact, string username)
         {
-            if (id != user.UserName)
+            if (id != contact.id && username != contact.UserName)
             {
                 return BadRequest();
             }
+
+            _context.Entry(contact).State = EntityState.Modified;
+
             try
             {
-
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!ContactExists(id))
                 {
                     return NotFound();
                 }
@@ -234,135 +89,32 @@ namespace whatsappProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser([Bind("UserName", "NickName", "Password", "Image", "Server")] User user)
-        {
-            if (_context == null)
-            {
-                return NotFound();
-            }
-
-            user.Contacts = new List<Contact>();
-            _context.CreateUser(user);
-
-            return CreatedAtAction("GetUser", new { id = user.UserName }, user);
-        }
-
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCertainUser(string id)
-        {
-            if (_context == null)
-            {
-                return NotFound();
-            }
-            var user = _context.GetUser(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.DeleteUser(id);
-
-            return NoContent();
-        }
-
-        private bool UserExists(string id)
-        {
-            return (_context.GetAllUsers().Any(e => e.UserName == id));
-        }
-    }
-
-
-/// <summary>
-/// ///////////////////////////////////////////////////////////////////////////////////////////////////////
-/// </summary>
-
-    [Route("api/[controller]")]
-    [ApiController]
-    public class contactsController : ControllerBase
-    {
-        private IUserService _context;
-
-        public contactsController(IUserService context)
-        {
-           _context = context;   
-        }
-
-        public class UserSession
-        {
-            public string username { get; set; }
-        }
-
-        // GET: api/contacts
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Object>>> GetContactSecondSide(string username)
-        {
-
-            //string username = HttpContext.Session.GetString("username");
-
-            if (_context.GetContacts(username) == null)
-            {
-                return NotFound();
-            }
-
-            var list = _context.GetContacts(username)
-                        .Where(x => true)
-                        .Select(x => new { x.id, x.name, x.server, x.last, x.lastdate }).ToArray();
-
-            return list;
-        }
-
-        // GET: api/contacts/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Object>> GetContact(string id, string username)
-        {
-
-            if (_context.GetContacts(username) == null)
-            {
-                return NotFound();
-            }
-
-            var contact = _context.GetContacts(username)
-                        .Where(x => x.id == id)
-                        .Select(x => new { x.id, x.name, x.server, x.last, x.lastdate }).ToArray();
-
-            if (contact == null || contact.Length == 0)
-            {
-                return NotFound();
-            }
-
-            return contact[0];
-        }
-
-        // PUT: api/contacts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutContact(string id, Contact contact, string username)
-        {
-            Contact newContact = _context.GetContact(username, id);
-            newContact.id = contact.id; 
-            newContact.name = contact.name; 
-            newContact.server = contact.server;     
-            newContact.last = contact.last; 
-            newContact.lastdate = contact.lastdate; 
-
-            return NoContent();
-        }
-
         // POST: api/contacts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Contact>> PostContact([FromBody]Contact contact, string username)
+        public async Task<ActionResult<Contact>> PostContact([FromBody] Contact contact, string username)
         {
-            if (_context.GetContacts(username) == null)
+          if (_context.Contact == null)
+          {
+              return Problem("Entity set 'whatsappProjectContext.Contact'  is null.");
+          }
+            contact.UserName = username;    
+            _context.Contact.Add(contact);
+            try
             {
-                return Problem("Entity set 'whatsappProjectContext.Contact'  is null.");
+                await _context.SaveChangesAsync();
             }
-
-            _context.AddContact(username, contact);
+            catch (DbUpdateException)
+            {
+                if (ContactExists(contact.id))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return CreatedAtAction("GetContact", new { id = contact.id }, contact);
         }
@@ -371,14 +123,18 @@ namespace whatsappProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteContact(string id, string username)
         {
-            Contact contact = _context.GetContact(username, id);
-
-            if ( contact == null)
+            if (_context.Contact == null)
+            {
+                return NotFound();
+            }
+            var contact = await _context.Contact.Where(x => x.id == id && x.UserName == username).FirstOrDefaultAsync();
+            if (contact == null)
             {
                 return NotFound();
             }
 
-            _context.GetContacts(username).Remove(contact);
+            _context.Contact.Remove(contact);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -387,21 +143,37 @@ namespace whatsappProject.Controllers
         [HttpGet("{id}/messages")]
         public async Task<ActionResult<Object>> GetContactMessages(string id, string username)
         {
+            if (_context.Message == null)
+            {
+                return new List<Object>();
+            }
 
-            var messages = _context.GetMessages(username, id);
+            var allMessages = await _context.Message.ToArrayAsync();
 
-            if (messages == null)
+            var relaventMessages = from message in allMessages
+                                   where message.contactName == id && message.UserName == username   
+                                   select new {message.Id, message.Text, message.Date, message.InOut};
+
+            if (relaventMessages == null)
                 return new List<Message>();
-            return messages;
+            return relaventMessages.ToArray();
         }
 
         [HttpPost("{id}/messages")]
         public async Task<IActionResult> PostMessage(string id, string username,
-            [FromBody] Message message)
+          [FromBody] Message message)
         {
-            message.Id = _context.getId();
-            _context.AddMessage(message, username, id);
+            
+            message.UserName = username;
+            message.contactName = id;
 
+            var contact = await _context.Contact.Where(_x => _x.id == id && _x.UserName == username).FirstOrDefaultAsync();
+            contact.lastdate = message.Date;
+            contact.last = message.Text;
+            _context.Entry(contact).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            _context.Message.Add(message);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
@@ -409,59 +181,48 @@ namespace whatsappProject.Controllers
         public async Task<ActionResult<Object>> GetSpecificMessage(string id, int id2, string username)
         {
 
-            if (_context.GetContacts(username) == null)
-            {
-                return NotFound();
-            }
+            var messages = await _context.Message.ToArrayAsync();
+            var message = from m in messages
+                          where m.UserName == username && m.contactName == id && m.Id == id2
+                          select new { m.Id, m.Text, m.Date, m.InOut }; ;
 
-            var contact = _context.GetContact(username, id);
-            var message=contact.Messages.Find(x => x.Id == id2);
             if (message == null)
             {
                 return NotFound();
             }
-            return message;
+
+            return message.FirstOrDefault();
         }
 
         [HttpDelete("{id}/messages/{id2}")]
         public async Task<IActionResult> DeleteSpecificMessage(string id, int id2, string username)
         {
-            var contact = _context.GetContact(username, id);
-
-            if (contact == null)
+            var messages = await _context.Message.ToArrayAsync();
+            var message = from m in messages
+                          where m.UserName == username && m.contactName == id && m.Id == id2
+                          select m;
+            var mes = message.FirstOrDefault();
+            if(mes != null)
             {
-                return BadRequest();
+                _context.Message.Remove(mes);
+                await _context.SaveChangesAsync();
             }
-
-            Message toDelete = contact.Messages.Find(x => x.Id == id2);
-
-            if (toDelete != null)
-            {
-                contact.Messages.Remove(toDelete);
-            }
-
             return NoContent();
         }
 
         [HttpPut("{id}/messages/{id2}")]
         public async Task<IActionResult> PutSpecificMessage(string id, int id2, Message message, string username)
         {
-
-            var contact = _context.GetContact(username, id);
-
-            if (contact == null)
-            {
-                return BadRequest();
-            }
-
-            Message toDelete = contact.Messages.Find(x => x.Id == id2);
-
-            if (toDelete != null)
-            {
-                contact.Messages.Remove(toDelete);
-                contact.Messages.Add(message);
-            }
+            message.contactName = id;
+            message.UserName = username;
+            _context.Entry(message).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        private bool ContactExists(string id)
+        {
+            return (_context.Contact?.Any(e => e.id == id)).GetValueOrDefault();
         }
     }
 }
