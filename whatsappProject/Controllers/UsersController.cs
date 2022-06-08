@@ -84,8 +84,14 @@ namespace whatsappProject.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser([Bind("UserName", "NickName", "Password", "Image", "Server")] User user)
+        public async Task<ActionResult<User>> PostUser([FromBody] User user)
         {
+
+          if (user.Server == null)
+            {
+                user.Server = "";
+            }
+
           if (_context.User == null)
           {
               return Problem("Entity set 'whatsappProjectContext.User'  is null.");
