@@ -10,6 +10,7 @@ using whatsappProject.Data;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
+
 //builder.Services.AddSingleton<IUserService>(new DataBase());
 builder.Services.AddSingleton<ChatHub>(new ChatHub());
 
@@ -24,8 +25,8 @@ builder.Services.AddCors(options =>
                       {
                           policy.AllowAnyHeader()
                               .AllowAnyMethod()
-                              .WithOrigins("http://localhost:3000")
-                              .AllowCredentials();
+                              .AllowAnyOrigin();
+                              //.AllowCredentials();
                       });
 });
 
@@ -63,7 +64,7 @@ if (!app.Environment.IsDevelopment())
 
 
 
-app.UseHttpsRedirection();
+//app.UseHttpRedirection();
 
 app.UseStaticFiles();
 app.MapHub<ChatHub>("/Hubs/chatHub");
