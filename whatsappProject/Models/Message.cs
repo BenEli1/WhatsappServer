@@ -9,10 +9,10 @@ namespace whatsappProject.Models
 
         public string? UserName { get; set; }    
 
-        public string Text { get; set; }
+        public string Contect { get; set; }
 
-        public string Date { get; set; }
+        public string Created { get; set; }
 
-        public string InOut { get; set; }
+        public string Sent { get; set; }
     }
 }

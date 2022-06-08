@@ -11,7 +11,7 @@ using whatsappProject.Data;
 namespace whatsappProject.Migrations
 {
     [DbContext(typeof(whatsappProjectContext))]
-    [Migration("20220603221218_Init")]
+    [Migration("20220608202453_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,15 +85,15 @@ namespace whatsappProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Date")
+                    b.Property<string>("Contect")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InOut")
+                    b.Property<string>("Created")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Text")
+                    b.Property<string>("Sent")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -151,7 +151,6 @@ namespace whatsappProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Server")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserName");

@@ -47,9 +47,9 @@ namespace whatsappProject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     contactName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    InOut = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Contect = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Created = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sent = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,7 +79,7 @@ namespace whatsappProject.Migrations
                     NickName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Server = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Server = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

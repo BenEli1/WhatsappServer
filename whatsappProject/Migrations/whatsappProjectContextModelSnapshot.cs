@@ -83,15 +83,15 @@ namespace whatsappProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Date")
+                    b.Property<string>("Contect")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InOut")
+                    b.Property<string>("Created")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Text")
+                    b.Property<string>("Sent")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -149,7 +149,6 @@ namespace whatsappProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Server")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserName");

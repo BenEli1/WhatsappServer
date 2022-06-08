@@ -152,7 +152,7 @@ namespace whatsappProject.Controllers
 
             var relaventMessages = from message in allMessages
                                    where message.contactName == id && message.UserName == username   
-                                   select new {message.Id, message.Text, message.Date, message.InOut};
+                                   select new {message.Id, message.Contect, message.Created, message.Sent};
 
             if (relaventMessages == null)
                 return new List<Message>();
@@ -168,8 +168,8 @@ namespace whatsappProject.Controllers
             message.contactName = id;
 
             var contact = await _context.Contact.Where(_x => _x.id == id && _x.UserName == username).FirstOrDefaultAsync();
-            contact.lastdate = message.Date;
-            contact.last = message.Text;
+            contact.lastdate = message.Created;
+            contact.last = message.Contect;
             _context.Entry(contact).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             _context.Message.Add(message);
@@ -184,7 +184,7 @@ namespace whatsappProject.Controllers
             var messages = await _context.Message.ToArrayAsync();
             var message = from m in messages
                           where m.UserName == username && m.contactName == id && m.Id == id2
-                          select new { m.Id, m.Text, m.Date, m.InOut }; ;
+                          select new { m.Id, m.Contect, m.Created, m.Sent }; ;
 
             if (message == null)
             {
