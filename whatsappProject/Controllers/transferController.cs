@@ -37,6 +37,15 @@ namespace whatsappProject.Controllers
         public async Task<ActionResult<transfer>> Posttransfer([FromBody]transfer transfer)
         {
             _context.Transfer.Add(transfer);
+            await _context.SaveChangesAsync();
+            Message message = new Message();
+            message.contactName = transfer.from;
+            message.UserName = transfer.to;
+            message.Contect = transfer.content;
+            message.Sent = "false";
+            DateTime localDate = DateTime.Now;
+            message.Created = localDate.ToString();
+            _context.Message.Add(message);
             await _context.SaveChangesAsync();  
             _hub.SendMessage(transfer.to, transfer.from, transfer.content);
             return NoContent();

@@ -155,6 +155,20 @@ namespace whatsappProject.Migrations
 
                     b.ToTable("User");
                 });
+
+            modelBuilder.Entity("whatsappProject.Models.UserToken", b =>
+                {
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserName");
+
+                    b.ToTable("UserToken");
+                });
 #pragma warning restore 612, 618
         }
     }

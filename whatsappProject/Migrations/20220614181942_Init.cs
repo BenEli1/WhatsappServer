@@ -85,6 +85,18 @@ namespace whatsappProject.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.UserName);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "UserToken",
+                columns: table => new
+                {
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserToken", x => x.UserName);
+                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -103,6 +115,9 @@ namespace whatsappProject.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "UserToken");
         }
     }
 }

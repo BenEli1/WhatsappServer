@@ -36,8 +36,16 @@ namespace whatsappProject.Controllers
 
             _context.Invitation.Add(invitation);
             await _context.SaveChangesAsync();
-
-          return NoContent();
+            Contact contact = new Contact();
+            contact.server = invitation.server;
+            contact.UserName = invitation.to;
+            contact.id = invitation.from;
+            contact.name = invitation.from;
+            contact.last = "";
+            contact.lastdate = "";
+            _context.Contact.Add(contact);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
