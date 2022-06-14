@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using whatsappProject.Models;
 using whatsappProject.Hubs;
 using whatsappProject.Data;
+using net_core_api_push_notification_demo.Models;
+using net_core_api_push_notification_demo.Services;
+
 
 
 namespace whatsappProject.Controllers
@@ -13,11 +16,13 @@ namespace whatsappProject.Controllers
     {
         private readonly whatsappProjectContext _context;
         private readonly ChatHub _hub;
+        private readonly INotificationService _notificationService;
 
-        public transferController(whatsappProjectContext context, ChatHub chathub)
+        public transferController(whatsappProjectContext context, ChatHub chathub, INotificationService notificationService)
         {
             _context = context;
             _hub = chathub;
+            _notificationService = notificationService;
         }
 
         // GET: api/transfer
@@ -36,8 +41,12 @@ namespace whatsappProject.Controllers
         [HttpPost]
         public async Task<ActionResult<transfer>> Posttransfer([FromBody]transfer transfer)
         {
+
+            //add the trasfer to the dataBase
             _context.Transfer.Add(transfer);
             await _context.SaveChangesAsync();
+
+            //create message and push the message 
             Message message = new Message();
             message.contactName = transfer.from;
             message.UserName = transfer.to;
@@ -47,7 +56,24 @@ namespace whatsappProject.Controllers
             message.Created = localDate.ToString();
             _context.Message.Add(message);
             await _context.SaveChangesAsync();  
+
+            //send sisnalr to react
             _hub.SendMessage(transfer.to, transfer.from, transfer.content);
+
+            //find the Token of the username
+            var UserToken = await _context.UserToken.FindAsync(transfer.to);
+            string token = UserToken.Token;
+
+            //create notification and send it
+            NotificationModel notificationModel = new NotificationModel();
+
+            notificationModel.Title = transfer.from;
+            notificationModel.Body = transfer.content;
+            notificationModel.DeviceId = token;
+            notificationModel.IsAndroiodDevice = true;
+
+            await _notificationService.SendNotification(notificationModel);
+
             return NoContent();
         }
     }

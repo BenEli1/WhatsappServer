@@ -59,20 +59,25 @@ namespace whatsappProject.Controllers
           {
               return Problem("Entity set 'whatsappProjectContext.UserToken'  is null.");
           }
-            _context.UserToken.Add(userToken);
-            try
+
+            if (await _context.UserToken.FindAsync(userToken.UserName) == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UserTokenExists(userToken.UserName))
+
+                _context.UserToken.Add(userToken);
+                try
                 {
-                    return Conflict();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateException)
                 {
-                    throw;
+                    if (UserTokenExists(userToken.UserName))
+                    {
+                        return Conflict();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
 
