@@ -88,6 +88,10 @@ app.MapHub<ChatHub>("/Hubs/chatHub");
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
+app.UseHttpsRedirection();
+app.UseEndpoints(endpoints => {
+    endpoints.MapControllers();
+});
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseSession();
@@ -95,11 +99,6 @@ app.UseCookiePolicy();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=/api/contacts}/{action=Index}/{id?}");
-
-app.UseHttpsRedirection();
-app.UseEndpoints(endpoints => {
-    endpoints.MapControllers();
-});
 app.Run();
 
 
