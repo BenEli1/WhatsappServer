@@ -67,7 +67,7 @@ namespace whatsappProject.Controllers
             //create notification and send it
             NotificationModel notificationModel = new NotificationModel();
 
-            notificationModel.Title = transfer.from;
+            notificationModel.Title = transfer.from + "|" + transfer.to;
             notificationModel.Body = transfer.content;
             notificationModel.DeviceId = token;
             notificationModel.IsAndroiodDevice = true;

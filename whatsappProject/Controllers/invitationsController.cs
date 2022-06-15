@@ -62,7 +62,7 @@ namespace whatsappProject.Controllers
             NotificationModel notificationModel = new NotificationModel();
 
             notificationModel.Title = "Invitaion";
-            notificationModel.Body = invitation.from;
+            notificationModel.Body = invitation.from + "|" + invitation.to;
             notificationModel.DeviceId = token;
             notificationModel.IsAndroiodDevice = true;
 
