@@ -55,10 +55,23 @@ namespace whatsappProject.Controllers
             DateTime localDate = DateTime.Now;
             message.Created = localDate.ToString();
             _context.Message.Add(message);
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
+
+            //chamge the contacts
+            var contact = await _context.Contact.Where(_x => _x.id == transfer.from && _x.UserName == transfer.to).FirstOrDefaultAsync();
+            contact.lastdate = message.Created;
+            contact.last = message.Contect;
+            _context.Entry(contact).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            var contact2 = await _context.Contact.Where(_x => _x.id == transfer.to && _x.UserName == transfer.from).FirstOrDefaultAsync();
+            contact2.lastdate = message.Created;
+            contact2.last = message.Contect;
+            _context.Entry(contact2).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
             //send sisnalr to react
-            _hub.SendMessage(transfer.to, transfer.from, transfer.content);
+            //  _hub.SendMessage(transfer.to, transfer.from, transfer.content);
 
             //find the Token of the username
             var UserToken = await _context.UserToken.FindAsync(transfer.to);
@@ -67,7 +80,7 @@ namespace whatsappProject.Controllers
             //create notification and send it
             NotificationModel notificationModel = new NotificationModel();
 
-            notificationModel.Title = transfer.from + "|" + transfer.to;
+            notificationModel.Title = transfer.from + "@" + transfer.to;
             notificationModel.Body = transfer.content;
             notificationModel.DeviceId = token;
             notificationModel.IsAndroiodDevice = true;

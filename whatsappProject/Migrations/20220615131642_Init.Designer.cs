@@ -11,7 +11,7 @@ using whatsappProject.Data;
 namespace whatsappProject.Migrations
 {
     [DbContext(typeof(whatsappProjectContext))]
-    [Migration("20220614181942_Init")]
+    [Migration("20220615131642_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
